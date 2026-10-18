@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modo Foco · Música, ruido y concentración</title>
+<meta name="description" content="Estudio exploratorio sobre cómo la música, el silencio y el ruido ambiente influyen en el estrés y la concentración de estudiantes. Encuesta a 32 personas y propuesta de experimento con EEG.">
+<meta property="og:title" content="Modo Foco">
+<meta property="og:description" content="¿La música ayuda a concentrarse o solo mejora el ánimo? Encuesta a 32 personas y propuesta de experimento con EEG.">
+<meta name="theme-color" content="#14110f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314110f'/%3E%3Crect x='6' y='13' width='3' height='6' fill='%23f1e9dc'/%3E%3Crect x='11' y='8' width='3' height='16' fill='%23f1e9dc'/%3E%3Crect x='16' y='4' width='3' height='24' fill='%23ff5b2e'/%3E%3Crect x='21' y='9' width='3' height='14' fill='%23f1e9dc'/%3E%3Crect x='26' y='13' width='3' height='6' fill='%23f1e9dc'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300;1,9..144,500&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14110f;
+  --ink-2:#1d1916;
+  --paper:#f1e9dc;
+  --paper-2:#e7dccb;
+  --muted:#a89d8d;
+  --muted-d:#6b6154;
+  --line:rgba(241,233,220,.14);
+  --line-d:rgba(20,17,15,.16);
+  --hot:#ff5b2e;
+  --hot-d:#c63b12;
+  --gold:#e8c872;
+  --serif:'Fraunces',Georgia,serif;
+  --sans:'Inter Tight',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;background:var(--ink)}
+body{font-family:var(--sans);color:var(--paper);background:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(20px,5vw,64px)}
+section{scroll-margin-top:56px}
+
+/* ---------- barra superior ---------- */
+.top{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  background:rgba(20,17,15,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.top .wrap{display:flex;justify-content:space-between;align-items:center;height:56px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.brand i{width:8px;height:8px;border-radius:50%;background:var(--hot);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.25}}
+.top ul{display:flex;gap:26px;list-style:none;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.top ul a{text-decoration:none;color:var(--muted);transition:color .2s;padding:6px 0;border-bottom:1px solid transparent}
+.top ul a:hover,.top ul a.on{color:var(--paper);border-bottom-color:var(--hot)}
+.progreso{position:absolute;left:0;bottom:-1px;height:2px;background:var(--hot);width:0}
+
+/* ---------- portada ---------- */
+.hero{
+  position:relative;min-height:100vh;min-height:100svh;
+  padding-top:56px;display:flex;flex-direction:column;overflow:hidden;
+  background:radial-gradient(900px 420px at 85% 105%, rgba(255,91,46,.16), transparent 70%),var(--ink);
+}
+.hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.07;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.hero .wrap{position:relative;z-index:2;width:100%;display:flex;flex-direction:column;flex:1}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--hot);margin-bottom:22px}
+.titulo{margin-top:clamp(36px,8vh,90px)}
+h1{font-family:var(--serif);font-weight:300;font-size:clamp(64px,13vw,184px);line-height:.86;letter-spacing:-.035em}
+h1 em{font-style:italic;color:var(--hot)}
+.bajada{margin-top:30px;max-width:560px;font-size:clamp(16px,1.6vw,20px);line-height:1.5;color:#cfc5b5}
+.bajada b{color:var(--paper);font-weight:500}
+.visor{margin-top:auto;padding-top:36px}
+.controles{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;font-family:var(--mono);font-size:12px}
+.controles .lbl{color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-right:8px}
+.controles button{font:inherit;color:var(--paper);background:transparent;border:1px solid var(--line);padding:8px 14px;border-radius:999px;cursor:pointer;transition:all .2s}
+.controles button:hover{border-color:var(--paper)}
+.controles button[aria-pressed="true"]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+canvas#onda{display:block;width:100%;height:150px}
+.datos{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}
+.datos div{padding:22px 0 26px}
+.datos div+div{padding-left:22px;border-left:1px solid var(--line)}
+.datos strong{display:block;font-family:var(--serif);font-weight:300;font-size:clamp(30px,4vw,52px);letter-spacing:-.02em;line-height:1}
+.datos small{display:block;margin-top:8px;font-size:13px;color:var(--muted);line-height:1.35}
+.firma{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:14px 0 22px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- secciones ---------- */
+.sec{padding:clamp(72px,11vw,150px) 0;position:relative}
+.sec.light{background:var(--paper);color:var(--ink)}
+.sec.dark{background:var(--ink);color:var(--paper)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;display:flex;gap:14px;align-items:center;margin-bottom:28px}
+.eyebrow b{font-weight:500;color:var(--hot)}
+.light .eyebrow b{color:var(--hot-d)}
+.eyebrow::after{content:"";height:1px;width:64px;background:currentColor;opacity:.3}
+h2{font-family:var(--serif);font-weight:300;font-size:clamp(36px,5.6vw,76px);line-height:1;letter-spacing:-.03em;max-width:15em}
+h2 em{font-style:italic;color:var(--hot)}
+.light h2 em{color:var(--hot-d)}
+h3{font-family:var(--serif);font-weight:500;font-size:clamp(20px,2.2vw,26px);letter-spacing:-.01em;line-height:1.15}
+.lead{font-size:clamp(17px,1.7vw,21px);line-height:1.55;max-width:38em;margin-top:26px}
+.dark .lead{color:#cfc5b5}
+.light .lead{color:#3b342b}
+p.txt{font-size:16px;line-height:1.6}
+.light p.txt{color:#3b342b}
+.dark p.txt{color:#cfc5b5}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.muted{color:var(--muted)}
+.light .muted{color:var(--muted-d)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+/* ---------- 01 pregunta ---------- */
+.dos{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(32px,6vw,90px);margin-top:56px}
+.objs{list-style:none;counter-reset:o;border-top:1px solid var(--line-d)}
+.objs li{counter-increment:o;display:grid;grid-template-columns:40px 1fr;gap:6px;padding:16px 0;border-bottom:1px solid var(--line-d);font-size:16px;line-height:1.45;color:#3b342b}
+.objs li::before{content:"0" counter(o);font-family:var(--mono);font-size:12px;color:var(--hot-d);padding-top:3px}
+
+.hip{margin-top:clamp(64px,9vw,110px)}
+.hip-h{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap}
+.hlist{margin-top:30px;border-top:1px solid var(--ink)}
+.h{display:grid;grid-template-columns:90px 1fr auto;gap:20px;align-items:baseline;padding:22px 0;border-bottom:1px solid var(--line-d);transition:background .25s,padding .25s}
+.h:hover{background:rgba(20,17,15,.035);padding-left:12px;padding-right:12px}
+.h .n{font-family:var(--serif);font-weight:300;font-size:46px;line-height:1;letter-spacing:-.03em}
+.h .t{font-size:17px;line-height:1.45;color:#2a241d;max-width:44em}
+.h .t small{display:block;margin-top:4px;color:var(--muted-d);font-size:14px}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:6px 11px;border-radius:999px;border:1px solid var(--line-d);white-space:nowrap;color:var(--muted-d)}
+.tag.eeg{border-style:dashed}
+
+.marco{margin-top:clamp(64px,9vw,110px);display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--ink)}
+.marco>div{padding:28px 28px 8px 0}
+.marco>div+div{padding-left:28px;border-left:1px solid var(--line-d)}
+.marco h3{margin:12px 0 12px}
+.marco .mono{color:var(--hot-d)}
+
+.ondas{margin-top:20px;display:grid;gap:6px}
+.onda-r{display:grid;grid-template-columns:104px 1fr;gap:12px;align-items:center}
+.onda-r .g{font-family:var(--mono);font-size:11px;letter-spacing:.06em;line-height:1.3}
+.onda-r .g span{display:block;color:var(--muted-d);font-size:10px;letter-spacing:.02em;text-transform:none}
+.onda-r svg{width:100%;height:34px;display:block}
+.onda-r path{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 2.2s ease}
+.in .onda-r path,.onda-r.in path{stroke-dashoffset:0}
+.onda-r.alfa path{stroke:var(--hot-d);stroke-width:2}
+
+/* panel paszkiel */
+.pasz{margin-top:clamp(64px,9vw,110px);background:var(--ink);color:var(--paper);padding:clamp(28px,5vw,64px);border-radius:4px;display:grid;grid-template-columns:1fr 1.25fr;gap:clamp(28px,5vw,64px)}
+.pasz h3{font-size:clamp(26px,3vw,38px);font-weight:300;margin:14px 0 18px;letter-spacing:-.02em}
+.pasz .mono{color:var(--hot)}
+.pasz dl{margin-top:26px;border-top:1px solid var(--line)}
+.pasz dl div{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+.pasz dt{color:var(--muted)}
+.pasz dd{text-align:right}
+.pasz .nota{margin-top:16px;font-size:13px;color:var(--muted);line-height:1.5}
+.lc svg{width:100%;height:auto;display:block;overflow:visible}
+.lc .cap{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.lc .ln{fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 2.4s cubic-bezier(.3,.6,.2,1)}
+.lc.in .ln{stroke-dashoffset:0}
+.lc text{font-family:var(--mono);font-size:16px;fill:var(--muted)}
+.lc .lb{font-size:18px;font-weight:500}
+
+/* ---------- 02 encuesta ---------- */
+.enc-grid{margin-top:64px;display:grid;grid-template-columns:repeat(12,1fr);gap:clamp(36px,5vw,64px) clamp(24px,4vw,56px)}
+.bloque{grid-column:span 6}
+.bloque.full{grid-column:1/-1}
+.bloque .cab{border-top:1px solid var(--line);padding-top:18px;margin-bottom:26px}
+.bloque .cab .mono{color:var(--muted)}
+.bloque .cab h3{margin-top:8px;font-weight:300;font-size:clamp(24px,2.6vw,34px);letter-spacing:-.02em}
+.big{font-family:var(--serif);font-weight:300;font-size:clamp(64px,8vw,112px);letter-spacing:-.04em;line-height:.9}
+.big sup{font-size:.4em;vertical-align:top;color:var(--hot);margin-left:2px}
+.big small{font-size:.32em;color:var(--muted);letter-spacing:0;margin-left:6px}
+
+.stack{display:flex;height:54px;gap:3px;margin:22px 0 14px}
+.stack i{display:block;flex:var(--f);min-width:0;background:var(--paper);position:relative;transform-origin:left;transform:scaleX(0);transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+.rv.in .stack i{transform:scaleX(1)}
+.stack i:nth-child(1){background:var(--hot)}
+.stack i:nth-child(2){background:#e08a68}
+.stack i:nth-child(3){background:#9d8f7d}
+.stack i:nth-child(4){background:#6a6054}
+.stack i:nth-child(5){background:#3d362f}
+.stack i span{position:absolute;left:8px;top:8px;font-family:var(--mono);font-size:12px;color:var(--ink);font-weight:500}
+.stack i:nth-child(n+4) span{color:var(--paper)}
+.leyenda{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted)}
+.leyenda span::before{content:"";display:inline-block;width:9px;height:9px;margin-right:7px;background:var(--c);vertical-align:-1px}
+
+.rows{display:grid;gap:12px}
+.row{display:grid;grid-template-columns:minmax(110px,170px) 1fr auto;gap:14px;align-items:center;font-size:14px}
+.row .lab{color:#cfc5b5}
+.row .track{height:14px;background:rgba(241,233,220,.08);position:relative}
+.row .track i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--paper);transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
+.rv.in .row .track i{width:var(--w)}
+.row.hl .track i{background:var(--hot)}
+.row.hl .lab,.row.hl .val{color:var(--paper);font-weight:500}
+.row.alt .track i{background:#9d8f7d}
+.row .val{font-family:var(--mono);font-size:12px;color:var(--muted);min-width:70px;text-align:right}
+
+.split{display:flex;height:70px;gap:3px;margin:8px 0 14px}
+.split div{flex:var(--f);background:var(--c);display:flex;flex-direction:column;justify-content:flex-end;padding:8px 10px;transform-origin:left;transform:scaleX(0);transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+.rv.in .split div{transform:scaleX(1)}
+.split b{font-family:var(--serif);font-weight:300;font-size:30px;line-height:1;color:var(--ink);white-space:nowrap}
+.split small{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);white-space:nowrap;overflow:hidden}
+
+.dial{margin-top:30px;display:grid;gap:18px}
+.dial .d{display:grid;grid-template-columns:1fr;gap:6px}
+.dial .d>div:first-child{display:flex;justify-content:space-between;font-size:14px;color:#cfc5b5}
+.dial .d>div:first-child b{font-family:var(--serif);font-weight:300;font-size:28px;color:var(--paper)}
+.escala{position:relative;height:16px;display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+.escala u{background:rgba(241,233,220,.09);text-decoration:none}
+.escala u.f{background:var(--c,var(--paper))}
+.escala s{position:absolute;inset:0;background:none}
+.escala+.ejes{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted)}
+
+.paradoja{grid-column:1/-1;margin-top:20px;border-top:1px solid var(--hot);border-bottom:1px solid var(--line);padding:clamp(36px,6vw,72px) 0;display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,80px);align-items:end}
+.paradoja .par{display:grid;gap:10px}
+.paradoja .par.a .big{color:var(--paper)}
+.paradoja .par.b .big{color:var(--hot)}
+.paradoja p{max-width:22em;color:#cfc5b5;font-size:16px}
+.paradoja h3{grid-column:1/-1;font-size:clamp(26px,3.4vw,46px);font-weight:300;letter-spacing:-.025em;max-width:20em;line-height:1.05}
+.paradoja h3 em{color:var(--hot)}
+
+/* ---------- 03 correlaciones ---------- */
+.corr{margin-top:56px;border-top:1px solid var(--ink)}
+.c-row{display:grid;grid-template-columns:1.2fr 1.3fr 90px 130px;gap:22px;align-items:center;padding:22px 0;border-bottom:1px solid var(--line-d)}
+.c-row.head{padding:12px 0;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-d)}
+.c-row .par{font-size:16px;line-height:1.35;color:#2a241d}
+.c-row .par small{display:block;color:var(--muted-d);font-size:13px;margin-top:3px}
+.rho{position:relative;height:30px}
+.rho::before{content:"";position:absolute;left:0;right:0;top:14px;height:2px;background:var(--line-d)}
+.rho i{position:absolute;left:0;top:14px;height:2px;width:0;background:var(--muted-d);transition:width 1.2s cubic-bezier(.2,.7,.2,1)}
+.rho b{position:absolute;top:7px;left:0;width:16px;height:16px;border-radius:50%;background:var(--paper);border:2px solid var(--muted-d);transform:translateX(-8px);transition:left 1.2s cubic-bezier(.2,.7,.2,1)}
+.c-row.sig .rho i{background:var(--hot-d)}
+.c-row.sig .rho b{border-color:var(--hot-d);background:var(--hot-d)}
+.c-row.in .rho i{width:var(--r)}
+.c-row.in .rho b{left:var(--r)}
+.c-row .v{font-family:var(--serif);font-weight:300;font-size:32px;letter-spacing:-.02em;line-height:1}
+.c-row .p{font-family:var(--mono);font-size:12px;color:var(--muted-d)}
+.c-row.sig .v{color:var(--hot-d)}
+.c-row .lec{font-size:14px;line-height:1.35;color:#3b342b}
+.c-row.sig .lec{font-weight:600}
+
+.comp{margin-top:clamp(56px,8vw,96px);display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(28px,5vw,80px)}
+.comp .cab{border-top:1px solid var(--ink);padding-top:16px;margin-bottom:22px}
+.comp .cab h3{margin-top:6px}
+.cols{display:flex;align-items:flex-end;gap:14px;height:210px;border-bottom:1px solid var(--ink);padding-bottom:0}
+.cols .c{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;height:100%;gap:8px;text-align:center}
+.cols .c i{display:block;background:var(--ink);height:0;transition:height 1.1s cubic-bezier(.2,.7,.2,1);position:relative}
+.cols .c.hot i{background:var(--hot-d)}
+.cols .c.soft i{background:#8b7f6e}
+.rv.in .cols .c i{height:var(--h)}
+.cols .c b{font-family:var(--serif);font-weight:300;font-size:34px;letter-spacing:-.02em;line-height:1}
+.cols-l{display:flex;gap:14px;margin-top:10px}
+.cols-l span{flex:1;text-align:center;font-size:13px;line-height:1.3;color:var(--muted-d)}
+.aviso{margin-top:22px;font-size:14px;line-height:1.5;color:var(--muted-d);border-left:2px solid var(--hot-d);padding-left:14px}
+
+.veredicto{margin-top:clamp(56px,8vw,96px);display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--ink)}
+.veredicto>div{padding:22px 18px 8px 0}
+.veredicto>div+div{padding-left:18px;border-left:1px solid var(--line-d)}
+.veredicto .n{font-family:var(--serif);font-weight:300;font-size:44px;letter-spacing:-.03em;line-height:1}
+.veredicto .e{margin-top:14px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.veredicto .e.ok{color:#2f6b3d}
+.veredicto .e.med{color:var(--hot-d)}
+.veredicto .e.pen{color:var(--muted-d)}
+.veredicto p{margin-top:8px;font-size:14px;line-height:1.45;color:#3b342b}
+
+/* ---------- 04 EEG ---------- */
+.pasos{margin-top:56px;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--paper)}
+.paso{padding:26px 24px 10px 0;position:relative}
+.paso+.paso{padding-left:24px;border-left:1px solid var(--line)}
+.paso .n{font-family:var(--serif);font-weight:300;font-size:64px;line-height:1;letter-spacing:-.04em;color:var(--hot)}
+.paso h3{margin:16px 0 10px;font-weight:300;font-size:24px}
+.paso p{font-size:14.5px;line-height:1.55;color:#cfc5b5}
+.eeg-2{margin-top:clamp(56px,8vw,100px);display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,80px)}
+.eeg-2 .cab{border-top:1px solid var(--line);padding-top:16px;margin-bottom:22px}
+.eeg-2 .cab .mono{color:var(--muted)}
+.eeg-2 .cab h3{margin-top:6px;font-weight:300;font-size:clamp(24px,2.6vw,34px);letter-spacing:-.02em}
+.sorteo{display:grid;gap:10px}
+.sorteo .fila{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:center}
+.sorteo .fila>b{font-family:var(--mono);font-weight:400;font-size:12px;color:var(--muted)}
+.sorteo .ord{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.sorteo .ord span{font-size:13px;padding:11px 8px;border:1px solid var(--line);text-align:center;animation:ent .5s both}
+.sorteo .ord span.s1{border-color:#8b7f6e}
+.sorteo .ord span.s2{background:rgba(241,233,220,.08)}
+.sorteo .ord span.s3{background:rgba(255,91,46,.18);border-color:rgba(255,91,46,.5)}
+.sorteo .ord span.s4{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+@keyframes ent{from{opacity:0;transform:translateY(8px)}}
+.btn{margin-top:18px;display:inline-flex;gap:10px;align-items:center;font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);background:var(--paper);border:0;padding:13px 20px;border-radius:999px;cursor:pointer;text-decoration:none;transition:transform .2s,background .2s}
+.btn:hover{transform:translateY(-2px);background:#fff}
+.btn.hot{background:var(--hot);color:var(--ink)}
+.btn.hot:hover{background:#ff7550}
+.btn.ghost{background:transparent;color:var(--paper);border:1px solid var(--line)}
+.btn.ghost:hover{background:transparent;border-color:var(--paper)}
+.vars{border-top:1px solid var(--line)}
+.vars div{display:grid;grid-template-columns:130px 1fr;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.vars dt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--hot);padding-top:3px}
+.vars dd{color:#cfc5b5;line-height:1.5}
+
+/* ---------- 05 conclusiones ---------- */
+.concl{margin-top:56px;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink)}
+.concl>div{padding:26px 28px 10px 0}
+.concl>div+div{padding-left:28px;border-left:1px solid var(--line-d)}
+.concl .n{font-family:var(--mono);font-size:12px;color:var(--hot-d);letter-spacing:.1em}
+.concl h3{margin:14px 0 12px;font-weight:300;font-size:clamp(26px,2.8vw,36px);letter-spacing:-.02em;line-height:1.05}
+.tip{margin-top:clamp(48px,7vw,88px);background:var(--ink);color:var(--paper);padding:clamp(28px,5vw,56px);display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,4vw,56px);align-items:center;border-radius:4px}
+.tip .big{color:var(--hot);font-size:clamp(56px,7vw,92px)}
+.tip p{font-size:clamp(18px,2vw,24px);line-height:1.4;font-family:var(--serif);font-weight:300;max-width:32em}
+.tip p small{display:block;margin-top:10px;font:13px var(--sans);color:var(--muted)}
+.lim{margin-top:clamp(56px,8vw,96px);display:grid;grid-template-columns:1fr 2fr;gap:clamp(24px,5vw,80px)}
+.lim ul{list-style:none;border-top:1px solid var(--ink)}
+.lim li{padding:14px 0 14px 28px;border-bottom:1px solid var(--line-d);position:relative;font-size:15.5px;line-height:1.45;color:#2a241d}
+.lim li::before{content:"×";position:absolute;left:0;top:13px;font-family:var(--mono);color:var(--hot-d)}
+
+/* ---------- 06 informe ---------- */
+.inf{display:grid;grid-template-columns:1.3fr 1fr;gap:clamp(32px,6vw,90px);margin-top:48px;align-items:start}
+.acciones{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+details{border-top:1px solid var(--line)}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;padding:16px 0;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:16px;color:var(--hot);transition:transform .25s}
+details[open] summary::after{transform:rotate(45deg)}
+details ul{list-style:none;padding:0 0 18px}
+details li{font-size:13.5px;line-height:1.5;color:#cfc5b5;padding:7px 0 7px 16px;border-left:1px solid var(--line);margin-bottom:6px}
+.pie{margin-top:clamp(72px,10vw,130px);padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pie a{text-decoration:none;color:var(--paper)}
+.pie a:hover{color:var(--hot)}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .dos,.pasz,.comp,.eeg-2,.lim,.inf{grid-template-columns:1fr}
+  .marco,.concl{grid-template-columns:1fr}
+  .marco>div,.marco>div+div,.concl>div,.concl>div+div{padding:24px 0;border-left:0;border-bottom:1px solid var(--line-d)}
+  .pasos{grid-template-columns:1fr 1fr}
+  .paso:nth-child(3){padding-left:0;border-left:0}
+  .paso:nth-child(n+3){border-top:1px solid var(--line)}
+  .veredicto{grid-template-columns:1fr 1fr}
+  .veredicto>div:nth-child(odd){padding-left:0;border-left:0}
+  .veredicto>div:nth-child(n+3){border-top:1px solid var(--line-d);margin-top:18px}
+  .bloque{grid-column:1/-1}
+  .c-row{grid-template-columns:1fr 90px;gap:12px 16px}
+  .c-row.head{display:none}
+  .c-row .rho{grid-column:1/-1;order:3}
+  .c-row .lec{grid-column:1/-1;order:4}
+  .h{grid-template-columns:64px 1fr;}
+  .h .tag{grid-column:2;justify-self:start}
+  .h .n{font-size:38px}
+}
+@media (max-width:700px){
+  .top ul{display:none}
+  .datos{grid-template-columns:1fr 1fr}
+  .datos div:nth-child(3){padding-left:0;border-left:0}
+  .datos div:nth-child(n+3){border-top:1px solid var(--line)}
+  canvas#onda{height:110px}
+  .paradoja{grid-template-columns:1fr}
+  .row{grid-template-columns:100px 1fr auto}
+  .tip{grid-template-columns:1fr}
+  .pasos{grid-template-columns:1fr}
+  .paso,.paso+.paso{padding:22px 0;border-left:0;border-top:1px solid var(--line)}
+  .vars div{grid-template-columns:1fr;gap:4px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#inicio"><i></i>Modo Foco</a>
+    <ul id="menu">
+      <li><a href="#pregunta">Pregunta</a></li>
+      <li><a href="#encuesta">Encuesta</a></li>
+      <li><a href="#correlaciones">Datos</a></li>
+      <li><a href="#eeg">Fase EEG</a></li>
+      <li><a href="#conclusiones">Conclusiones</a></li>
+      <li><a href="#informe">Informe</a></li>
+    </ul>
+  </div>
+  <div class="progreso" id="progreso"></div>
+</header>
+
+<!-- ============ PORTADA ============ -->
+<section class="hero" id="inicio">
+  <div class="wrap">
+    <div class="titulo">
+      <p class="kicker">Psicología de la educación · Octubre 2026</p>
+      <h1>Modo<br><em>Foco</em></h1>
+      <p class="bajada">¿La música ayuda a concentrarse o solo <b>mejora el ánimo</b>? Una encuesta a 32 personas y un experimento con EEG para comprobarlo.</p>
+    </div>
+
+    <div class="visor">
+      <div class="controles" role="group" aria-label="Condición auditiva">
+        <span class="lbl">Probá una condición</span>
+        <button data-m="silencio" aria-pressed="false">Silencio</button>
+        <button data-m="clasica" aria-pressed="true">Clásica</button>
+        <button data-m="rock" aria-pressed="false">Rock</button>
+        <button data-m="mia" aria-pressed="false">Mi música</button>
+      </div>
+      <canvas id="onda" aria-hidden="true"></canvas>
+    </div>
+
+    <div class="datos">
+      <div><strong>32</strong><small>personas encuestadas</small></div>
+      <div><strong>56%</strong><small>escucha música casi siempre al estudiar</small></div>
+      <div><strong>72%</strong><small>dice que las conversaciones ajenas son lo más distractor</small></div>
+      <div><strong>28%</strong><small>siente que la música realmente le da foco</small></div>
+    </div>
+    <div class="firma">
+      <span>Ignacio Vivanco · 1° Informática</span>
+      <span>Prof. Nigel</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 01 PREGUNTA ============ -->
+<section class="sec light" id="pregunta">
+  <div class="wrap">
+    <p class="eyebrow rv"><b>01</b> El punto de partida</p>
+    <h2 class="rv">¿Rendimos mejor con música, con ruido… o <em>en silencio</em>?</h2>
+    <p class="lead rv">Muchos estudiantes estudian con auriculares puestos. Pero sentirse a gusto no es lo mismo que rendir mejor, y de eso trata este trabajo.</p>
+
+    <div class="dos">
+      <div class="rv">
+        <h3>Por qué importa</h3>
+        <p class="txt" style="margin-top:14px">Sostener la atención y regular el estrés dependen de las funciones ejecutivas, que siguen madurando durante la adolescencia y la juventud. Entender cómo influye el ambiente sonoro sirve para armar mejores estrategias de estudio y mejores espacios en liceos, centros de formación y bibliotecas.</p>
+        <p class="txt" style="margin-top:14px">El proyecto tiene dos fases: primero, <b>preguntarle a la gente</b> qué percibe; después, <b>medirlo en el cerebro</b> con una diadema EEG portátil.</p>
+      </div>
+      <div class="rv">
+        <h3 style="margin-bottom:18px">Objetivos específicos</h3>
+        <ol class="objs">
+          <li>Describir con qué frecuencia y qué tipo de música se escucha al trabajar o estudiar.</li>
+          <li>Identificar qué ruidos se perciben como más distractores y cómo se relacionan con el estrés.</li>
+          <li>Analizar si la música mejora la concentración y la productividad frente al silencio.</li>
+          <li>Proponer un procedimiento con EEG para contrastar esas percepciones con datos fisiológicos.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="hip">
+      <div class="hip-h rv">
+        <h2 style="font-size:clamp(30px,4vw,54px)">Cinco hipótesis</h2>
+        <p class="mono muted">Tres se evalúan con la encuesta · dos con el EEG</p>
+      </div>
+      <div class="hlist">
+        <div class="h rv"><span class="n">H1</span><p class="t">Quienes escuchan música con más frecuencia perciben una mayor mejora de su concentración.</p><span class="tag">Encuesta</span></div>
+        <div class="h rv"><span class="n">H2</span><p class="t">El ruido ambiente se percibe como una fuente importante de estrés, y las conversaciones son el distractor principal.</p><span class="tag">Encuesta</span></div>
+        <div class="h rv"><span class="n">H3</span><p class="t">La mayoría se siente más productiva con su música preferida, pero lo atribuye más al ánimo que a la concentración.</p><span class="tag">Encuesta</span></div>
+        <div class="h rv"><span class="n">H4</span><p class="t">En tareas de resolución de problemas, el silencio y la música clásica o instrumental darán mejor desempeño y más potencia alfa que el rock con letra.</p><span class="tag eeg">Fase EEG</span></div>
+        <div class="h rv"><span class="n">H5</span><p class="t">La música de preferencia personal reducirá el estrés percibido, sin que eso implique mejor desempeño.</p><span class="tag eeg">Fase EEG</span></div>
+      </div>
+    </div>
+
+    <div class="marco">
+      <div class="rv">
+        <span class="mono">Estrés</span>
+        <h3>Una respuesta que se puede medir</h3>
+        <p class="txt">El cuerpo responde con dos ejes: el HPA (que libera glucocorticoides) y el SAM (adrenalina y noradrenalina). Se nota en la presión, el pulso, la conductancia de la piel y en una caída de las ondas alfa del cerebro.</p>
+      </div>
+      <div class="rv" id="ondasBox">
+        <span class="mono">Ondas cerebrales</span>
+        <h3>Cuatro ritmos, cuatro estados</h3>
+        <div class="ondas" id="ondas"></div>
+      </div>
+      <div class="rv">
+        <span class="mono">Carga cognitiva</span>
+        <h3>Las letras compiten con la tarea</h3>
+        <p class="txt">Según Sweller, la información irrelevante ocupa recursos que la tarea necesita. Una canción con letra mete lenguaje en el bucle fonológico (efecto del habla irrelevante, Salamé y Baddeley), y por eso puede estorbar al calcular o programar.</p>
+      </div>
+    </div>
+
+    <div class="pasz">
+      <div class="rv">
+        <span class="mono">Antecedente</span>
+        <h3>Paszkiel, Dobrakowski y Łysiak (2020)</h3>
+        <p style="color:#cfc5b5;font-size:15px;line-height:1.6">Estudio piloto: primero estresaron a las participantes con cálculos contra reloj y después les pusieron 5 minutos de un sonido. Midieron cómo se recuperaban.</p>
+        <dl>
+          <div><dt>Muestra</dt><dd>9 mujeres, 22 años</dd></div>
+          <div><dt>Equipo</dt><dd>EEG de 14 canales, presión, pulso</dd></div>
+          <div><dt>Condiciones</dt><dd>Silencio · Rap · Relajante · ASMR</dd></div>
+          <div><dt>Resultado</dt><dd>Relajante y ASMR calman más rápido (p &lt; 0,05)</dd></div>
+        </dl>
+        <p class="nota">El estrés baja solo con el tiempo: lo que importa es si el sonido acelera o frena esa recuperación. Los autores aclaran que es un piloto con muestra muy pequeña.</p>
+      </div>
+      <div class="lc rv" id="alfaBox">
+        <p class="cap">Amplitud media de ondas alfa (dB) · más alto = más relajación</p>
+        <svg id="alfa" viewBox="0 0 720 330" role="img" aria-label="Gráfico de líneas: amplitud alfa antes del estrés, después del estrés y después del sonido, para silencio, rap, música relajante y ASMR"></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 ENCUESTA ============ -->
+<section class="sec dark" id="encuesta">
+  <div class="wrap">
+    <p class="eyebrow rv"><b>02</b> Fase 1 · Encuesta de percepción</p>
+    <h2 class="rv">Lo que dijeron <em>32 personas</em></h2>
+    <p class="lead rv">Formulario anónimo, voluntario y en línea, respondido entre el 3 y el 5 de octubre de 2026. Diez preguntas, escala de 1 a 5 y respuestas múltiples.</p>
+
+    <div class="enc-grid">
+
+      <div class="bloque rv">
+        <div class="cab"><span class="mono">Hábito</span><h3>¿Con qué frecuencia escuchás música al estudiar?</h3></div>
+        <div class="big">56<sup>%</sup><small>casi siempre</small></div>
+        <div class="stack" aria-hidden="true">
+          <i style="--f:9"><span>9</span></i><i style="--f:9"><span>9</span></i><i style="--f:7"><span>7</span></i><i style="--f:6"><span>6</span></i><i style="--f:1"></i>
+        </div>
+        <div class="leyenda">
+          <span style="--c:#ff5b2e">Siempre</span><span style="--c:#e08a68">Frecuentemente</span><span style="--c:#9d8f7d">A veces</span><span style="--c:#6a6054">Raramente</span><span style="--c:#3d362f;">Nunca</span>
+        </div>
+      </div>
+
+      <div class="bloque rv">
+        <div class="cab"><span class="mono">Gusto</span><h3>¿Con letra o sin letra?</h3></div>
+        <div class="split">
+          <div style="--f:14;--c:#e08a68"><b>44%</b><small>Con letra · 14</small></div>
+          <div style="--f:12;--c:#f1e9dc"><b>38%</b><small>Sin letra · 12</small></div>
+          <div style="--f:6;--c:#6a6054"><b style="color:var(--paper)">19%</b><small style="color:var(--paper)">Sin pref. · 6</small></div>
+        </div>
+        <div class="rows" id="generos" style="margin-top:22px"></div>
+      </div>
+
+      <div class="bloque rv">
+        <div class="cab"><span class="mono">Ruido</span><h3>¿Qué ruidos distraen más?</h3></div>
+        <div class="rows" id="ruidos"></div>
+        <p style="margin-top:20px;font-size:14px;color:var(--muted)">Respuesta múltiple. Las conversaciones ajenas son el distractor más mencionado, algo coherente con el efecto del habla irrelevante.</p>
+      </div>
+
+      <div class="bloque rv">
+        <div class="cab"><span class="mono">Estrés</span><h3>El ruido pesa más que la música</h3></div>
+        <div class="dial">
+          <div class="d">
+            <div><span>El ruido ambiente aumenta mi estrés</span><b>3,97</b></div>
+            <div class="escala" data-v="3.97" style="--c:var(--hot)"></div>
+            <div class="ejes"><span>1</span><span>5</span></div>
+          </div>
+          <div class="d">
+            <div><span>La música mejora mi concentración</span><b>3,22</b></div>
+            <div class="escala" data-v="3.22"></div>
+            <div class="ejes"><span>1</span><span>5</span></div>
+          </div>
+        </div>
+        <p style="margin-top:22px;font-size:14px;color:var(--muted)">El 66% se siente más estresado en un ambiente ruidoso (21 personas), el 19% en uno silencioso y al 16% le da igual. Además, el 91% cree que el sonido afecta su estrés al menos "algo".</p>
+      </div>
+
+      <div class="bloque full rv">
+        <div class="cab"><span class="mono">Efectos percibidos</span><h3>¿Qué notás cuando estudiás con música?</h3></div>
+        <div class="rows" id="efectos"></div>
+      </div>
+
+      <div class="paradoja">
+        <h3 class="rv">La paradoja: nos sentimos <em>más productivos</em>, pero la música rara vez nos da <em>foco</em>.</h3>
+        <div class="par a rv"><div class="big" style="font-size:clamp(64px,9vw,128px)">66<sup>%</sup></div><p>se siente más productivo con su música preferida que en silencio: 13 "mucho más" y 8 "ligeramente más".</p></div>
+        <div class="par b rv"><div class="big" style="font-size:clamp(64px,9vw,128px)">28<sup>%</sup></div><p>dice que la música facilita su concentración. El beneficio más citado fue el ánimo (75%).</p></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 CORRELACIONES ============ -->
+<section class="sec light" id="correlaciones">
+  <div class="wrap">
+    <p class="eyebrow rv"><b>03</b> Análisis</p>
+    <h2 class="rv">¿Qué <em>se relaciona</em> con qué?</h2>
+    <p class="lead rv">Correlaciones de Spearman sobre las 32 respuestas. El punto indica la fuerza de la relación (de 0 a 1); en naranja, las que resultaron estadísticamente significativas (p &lt; 0,05).</p>
+
+    <div class="corr" id="corr">
+      <div class="c-row head"><span>Par de variables</span><span>Fuerza (ρ)</span><span>Valor</span><span>p</span></div>
+    </div>
+
+    <div class="comp">
+      <div class="rv">
+        <div class="cab"><span class="mono muted">Concentración percibida</span><h3>Quien más escucha, más cree que le sirve</h3></div>
+        <div class="cols">
+          <div class="c hot" style="--h:74.4%"><b>3,72</b><i></i></div>
+          <div class="c soft" style="--h:51.4%"><b>2,57</b><i></i></div>
+          <div class="c soft" style="--h:40%"><b>2,0</b><i></i></div>
+        </div>
+        <div class="cols-l"><span>Escuchan seguido<br>(n = 18)</span><span>A veces, rara vez o nunca<br>(n = 14)</span><span>No usan música<br>(n = 4)</span></div>
+      </div>
+      <div class="rv">
+        <div class="cab"><span class="mono muted">Volumen elegido (1 a 5)</span><h3>El ruido nos hace bajar el volumen</h3></div>
+        <div class="cols">
+          <div class="c hot" style="--h:46%"><b>2,3</b><i></i></div>
+          <div class="c soft" style="--h:64%"><b>3,2</b><i></i></div>
+        </div>
+        <div class="cols-l"><span>Se estresan con ruido<br>(n = 21)</span><span>Silencioso o indiferente<br>(n = 11)</span></div>
+        <p class="aviso">Con grupos tan chicos es un dato solo descriptivo. Y ojo: correlación no es causa.</p>
+      </div>
+    </div>
+
+    <div class="hip-h rv" style="margin-top:clamp(64px,9vw,110px)">
+      <h2 style="font-size:clamp(30px,4vw,54px)">Veredicto de las hipótesis</h2>
+    </div>
+    <div class="veredicto">
+      <div class="rv"><div class="n">H1</div><div class="e ok">Confirmada, con matices</div><p>Más música, más concentración percibida. Pero son percepciones, no rendimiento.</p></div>
+      <div class="rv"><div class="n">H2</div><div class="e ok">Confirmada</div><p>El ruido estresa (3,97 sobre 5) y las conversaciones distraen más (72%).</p></div>
+      <div class="rv"><div class="n">H3</div><div class="e med">Parcial</div><p>66% más productivo, pero 75% habla de ánimo y solo 28% de concentración.</p></div>
+      <div class="rv"><div class="n">H4</div><div class="e pen">Pendiente · EEG</div><p>Silencio y clásica vs. rock con letra en resolución de problemas.</p></div>
+      <div class="rv"><div class="n">H5</div><div class="e pen">Pendiente · EEG</div><p>Música preferida: ¿menos estrés sin mejor desempeño?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 EEG ============ -->
+<section class="sec dark" id="eeg">
+  <div class="wrap">
+    <p class="eyebrow rv"><b>04</b> Fase 2 · Propuesta experimental</p>
+    <h2 class="rv">Ahora, <em>medirlo</em> en el cerebro</h2>
+    <p class="lead rv">La encuesta dice qué creemos. El experimento propone comprobar qué pasa de verdad, con una diadema EEG portátil Muse (4 sensores, dos frontales y dos temporales) y tareas de matemática y programación.</p>
+
+    <div class="pasos">
+      <div class="paso rv"><div class="n">01</div><h3>Preparación y línea base</h3><p>Se explica el estudio, se firma el consentimiento, se coloca la diadema y se verifica la señal. Se registra el EEG y el estrés percibido antes de empezar.</p></div>
+      <div class="paso rv"><div class="n">02</div><h3>Cuatro condiciones</h3><p>Silencio, música clásica, rock con letra y música de preferencia personal, en orden aleatorizado o contrabalanceado.</p></div>
+      <div class="paso rv"><div class="n">03</div><h3>Resolución de problemas</h3><p>En cada condición, un set de problemas matemáticos y otro de informática, en formas paralelas y de dificultad estandarizada.</p></div>
+      <div class="paso rv"><div class="n">04</div><h3>Registro de métricas</h3><p>Potencia alfa y beta, relación theta/beta, tiempos de resolución, aciertos y un cuestionario Likert antes y después de cada bloque.</p></div>
+    </div>
+
+    <div class="eeg-2">
+      <div class="rv">
+        <div class="cab"><span class="mono">Contrabalanceo</span><h3>Nadie arranca por la misma condición</h3></div>
+        <p class="txt" style="margin-bottom:20px">Para evitar efectos de orden y de fatiga, cada participante pasa por las cuatro condiciones en un orden distinto. Probá un sorteo de ejemplo:</p>
+        <div class="sorteo" id="sorteo"></div>
+        <button class="btn" id="sortear" type="button">↻ Sortear de nuevo</button>
+      </div>
+      <div class="rv">
+        <div class="cab"><span class="mono">Diseño</span><h3>Variables y análisis</h3></div>
+        <dl class="vars">
+          <div><dt>Participantes</dt><dd>8 a 15 estudiantes voluntarios (con autorización de tutores si son menores).</dd></div>
+          <div><dt>Independiente</dt><dd>Condición auditiva (4 niveles, medidas repetidas).</dd></div>
+          <div><dt>Dependientes</dt><dd>Potencia alfa, beta y theta/beta (EEG) · estrés percibido (Likert) · tiempo de resolución · aciertos.</dd></div>
+          <div><dt>Análisis</dt><dd>Prueba de Friedman y comparaciones por pares de Wilcoxon con corrección de Holm, por el tamaño reducido de la muestra.</dd></div>
+          <div><dt>Limitación</dt><dd>Muse es menos preciso que un EEG de 14 canales, pero accesible y suficiente para un trabajo exploratorio.</dd></div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 CONCLUSIONES ============ -->
+<section class="sec light" id="conclusiones">
+  <div class="wrap">
+    <p class="eyebrow rv"><b>05</b> Cierre</p>
+    <h2 class="rv">Sentirse bien <em>no es</em> rendir bien</h2>
+
+    <div class="concl">
+      <div class="rv"><span class="n">A</span><h3>La música es compañera de estudio</h3><p class="txt">Más de la mitad la usa con frecuencia y dos tercios se sienten más productivos con ella. Lo que más valoran es el ánimo y el alivio del estrés, no tanto la concentración.</p></div>
+      <div class="rv"><span class="n">B</span><h3>El enemigo es el habla ajena</h3><p class="txt">Las conversaciones son el distractor más citado (72%) y casi todos creen que el sonido del entorno influye en su estrés. Los espacios de estudio deberían cuidar el ruido verbal.</p></div>
+      <div class="rv"><span class="n">C</span><h3>Falta medirlo de verdad</h3><p class="txt">Todo lo anterior son percepciones. La fase con EEG permitiría contrastarlas con actividad cerebral, estrés y desempeño en problemas de matemática y programación.</p></div>
+    </div>
+
+    <div class="tip rv">
+      <div class="big">♪<small></small></div>
+      <p>Para calcular o programar, probá música sin letra a volumen moderado… o directamente silencio.<small>Es una orientación a partir de la literatura y de estos datos, no una regla universal: cada estudiante debería probar qué condición le funciona de verdad.</small></p>
+    </div>
+
+    <div class="lim">
+      <div class="rv"><h3>Limitaciones</h3><p class="txt" style="margin-top:12px">Para leer estos resultados con cautela.</p></div>
+      <ul class="rv">
+        <li>Muestra chica (n = 32), no probabilística y autoseleccionada: no se puede generalizar.</li>
+        <li>Datos autoinformados: miden percepciones, no estrés ni concentración reales.</li>
+        <li>No se registraron edad, género ni ocupación, así que no hay comparación entre grupos.</li>
+        <li>Preguntas de un solo ítem y categorías de música agrupadas a partir de respuestas abiertas.</li>
+        <li>Correlaciones sin corrección por comparaciones múltiples, y sin implicar causalidad.</li>
+        <li>El cuestionario no distingue el tipo de tarea (leer, calcular o programar).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 INFORME ============ -->
+<section class="sec dark" id="informe">
+  <div class="wrap">
+    <p class="eyebrow rv"><b>06</b> Documentación</p>
+    <h2 class="rv">El informe <em>completo</em></h2>
+    <div class="inf">
+      <div class="rv">
+        <p class="lead" style="margin-top:0">Marco teórico, metodología de las dos fases, resultados con tablas y gráficos, discusión, limitaciones y referencias.</p>
+        <div class="acciones">
+          <a class="btn hot" href="informe.pdf" download>↓ Descargar informe (PDF)</a>
+          <a class="btn ghost" href="#inicio">↑ Volver arriba</a>
+        </div>
+      </div>
+      <div class="rv">
+        <details>
+          <summary>Referencias principales</summary>
+          <ul>
+            <li>Paszkiel, S., Dobrakowski, P., y Łysiak, A. (2020). The impact of different sounds on stress level in the context of EEG, cardiac measures and subjective stress level: A pilot study. <i>Brain Sciences, 10</i>(10), 728.</li>
+            <li>Cassidy, G., y MacDonald, R. A. R. (2007). The effect of background music and background noise on the task performance of introverts and extraverts. <i>Psychology of Music, 35</i>(3), 517–537.</li>
+            <li>Dobbs, S., Furnham, A., y McClelland, A. (2011). The effect of background music and noise on the cognitive test performance of introverts and extraverts. <i>Applied Cognitive Psychology, 25</i>(2), 307–313.</li>
+            <li>Garcia-Argibay, M., Santed, M. A., y Reales, J. M. (2019). Efficacy of binaural auditory beats in cognition, anxiety, and pain perception: A meta-analysis. <i>Psychological Research, 83</i>(2), 357–372.</li>
+            <li>Mehta, R., Zhu, R., y Cheema, A. (2012). Is noise always bad? Exploring the effects of ambient noise on creative cognition. <i>Journal of Consumer Research, 39</i>(4), 784–799.</li>
+            <li>Salamé, P., y Baddeley, A. (1982). Disruption of short-term memory by unattended speech. <i>Journal of Verbal Learning and Verbal Behavior, 21</i>(2), 150–164.</li>
+            <li>Selye, H. (1956). <i>The stress of life</i>. McGraw-Hill.</li>
+            <li>Söderlund, G. B. W., Sikström, S., Loftesnes, J. M., y Sonuga-Barke, E. J. (2010). The effects of background white noise on memory performance in inattentive school children. <i>Behavioral and Brain Functions, 6</i>, 55.</li>
+            <li>Sweller, J. (1988). Cognitive load during problem solving: Effects on learning. <i>Cognitive Science, 12</i>(2), 257–285.</li>
+          </ul>
+        </details>
+        <details>
+          <summary>El cuestionario aplicado</summary>
+          <ul>
+            <li>¿Con qué frecuencia escuchás música mientras trabajás o estudiás?</li>
+            <li>¿Qué tipo de música preferís para concentrarte?</li>
+            <li>¿Qué ruidos ambientales encontrás más distractores? (múltiple)</li>
+            <li>¿Cuánto creés que la música mejora tu concentración? (1 a 5)</li>
+            <li>¿Cuánto creés que el ruido ambiente aumenta tu estrés? (1 a 5)</li>
+            <li>¿El tipo de música o ruido afecta tu nivel de estrés? (nada, poco, algo, mucho)</li>
+            <li>¿Qué efectos positivos notaste al escuchar música mientras te concentrás? (múltiple)</li>
+            <li>¿Te sentís más estresado en un ambiente silencioso o ruidoso?</li>
+            <li>¿Qué volumen elegís al escuchar música para concentrarte? (1 a 5)</li>
+            <li>Comparado con trabajar en silencio, ¿cómo es tu productividad con tu música preferida?</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+
+    <div class="pie">
+      <span>Ignacio Vivanco · 1° Informática · Psicología de la educación · Prof. Nigel</span>
+      <span>Octubre 2026 · <a href="#inicio">Modo Foco</a></span>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var $ = function(s,r){return (r||document).querySelector(s)};
+  var $$ = function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- visualizador de la portada ---------- */
+  (function(){
+    var c = $('#onda'), ctx = c.getContext('2d');
+    var btns = $$('.controles button');
+    var mode = 'clasica', t = 0, N = 90, cur = [], seed = [];
+    for (var i=0;i<N;i++){ cur.push(.05); seed.push(Math.random()); }
+    var HOT = '#ff5b2e', PAPER = '#f1e9dc', visible = true;
+    function size(){
+      var r = c.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+      c.width = r.width*d; c.height = r.height*d; ctx.setTransform(d,0,0,d,0,0);
+    }
+    function target(i){
+      var x = i/N;
+      if (mode==='silencio') return .03;
+      if (mode==='clasica') return .22 + .16*Math.sin(x*9 + t*1.1) + .1*Math.sin(x*21 - t*.7);
+      if (mode==='rock') return .25 + .7*Math.abs(Math.sin(t*5 + seed[i]*12))*(.5+seed[i]*.5);
+      return .2 + .3*Math.abs(Math.sin(x*14 + t*2.3))*(.6+.4*Math.sin(t*1.4+seed[i]*6));
+    }
+    function draw(){
+      var r = c.getBoundingClientRect(), w = r.width, h = r.height;
+      if (visible){
+        ctx.clearRect(0,0,w,h);
+        var gap = w/N, bw = Math.max(2, gap*.42);
+        for (var i=0;i<N;i++){
+          cur[i] += (Math.max(.02,target(i)) - cur[i])*.12;
+          var bh = Math.min(1,cur[i])*h*.92;
+          ctx.fillStyle = (mode==='rock') ? HOT : (i%9===0 ? HOT : PAPER);
+          ctx.globalAlpha = (mode==='silencio') ? .35 : .9;
+          ctx.fillRect(i*gap+(gap-bw)/2,(h-bh)/2,bw,bh);
+        }
+        ctx.globalAlpha = 1;
+      }
+      if (!reduce){ t += .016; requestAnimationFrame(draw); }
+    }
+    btns.forEach(function(b){
+      b.addEventListener('click', function(){
+        mode = b.dataset.m;
+        btns.forEach(function(o){ o.setAttribute('aria-pressed', o===b?'true':'false'); });
+        if (reduce){ for (var i=0;i<N;i++) cur[i]=target(i); draw(); }
+      });
+    });
+    if ('IntersectionObserver' in window){
+      new IntersectionObserver(function(e){ visible = e[0].isIntersecting; }).observe(c);
+    }
+    window.addEventListener('resize', size);
+    size(); draw();
+  })();
+
+  /* ---------- datos ---------- */
+  function filas(id, items){
+    $(id).innerHTML = items.map(function(i){
+      return '<div class="row '+(i.c||'')+'"><div class="lab">'+i.l+'</div><div class="track"><i style="--w:'+i.v+'%"></i></div><div class="val">'+i.t+'</div></div>';
+    }).join('');
+  }
+  filas('#ruidos', [
+    {l:'Conversaciones', v:72, t:'72% · 23', c:'hl'},
+    {l:'Construcción',   v:56, t:'56% · 18'},
+    {l:'Tráfico',        v:53, t:'53% · 17'},
+    {l:'Ruido de oficina', v:19, t:'19% · 6'}
+  ]);
+  filas('#generos', [
+    {l:'Pop', v:22, t:'7', c:'alt'},
+    {l:'Clásica', v:19, t:'6'},
+    {l:'Instrumental', v:16, t:'5'},
+    {l:'Ninguna', v:12, t:'4', c:'alt'},
+    {l:'Rock', v:9, t:'3', c:'alt'},
+    {l:'Cumbia', v:9, t:'3', c:'alt'},
+    {l:'Otros*', v:12, t:'4', c:'alt'}
+  ]);
+  filas('#efectos', [
+    {l:'Mejora el estado de ánimo', v:75, t:'75% · 24', c:'hl'},
+    {l:'Aumenta la productividad', v:50, t:'50% · 16'},
+    {l:'Reduce el estrés', v:50, t:'50% · 16'},
+    {l:'Facilita la concentración', v:28, t:'28% · 9', c:'hl'},
+    {l:'Ninguno', v:6, t:'6% · 2', c:'alt'}
+  ]);
+  var gp = $('#generos');
+  var nota = document.createElement('p');
+  nota.style.cssText = 'font-size:12px;color:var(--muted);margin-top:4px';
+  nota.textContent = '* Rap/salsa, ondas binaurales, "cualquiera si logro generar foco" y "no sé". Claras: música sin letra. Naranja y gris: con letra o sin preferencia.';
+  gp.appendChild(nota);
+
+  /* escalas 1-5 */
+  $$('.escala').forEach(function(e){
+    var v = parseFloat(e.dataset.v), h = '';
+    for (var i=1;i<=5;i++){
+      var p = Math.max(0,Math.min(1, (v-1)/4*5-(i-1)));
+      h += '<u style="background:linear-gradient(90deg,'+(e.style.getPropertyValue('--c')||'var(--paper)')+' '+(p*100)+'%,rgba(241,233,220,.09) '+(p*100)+'%)"></u>';
+    }
+    e.innerHTML = h;
+  });
+
+  /* tabla de correlaciones */
+  var cs = [
+    {a:'Frecuencia de escucha ↔ concentración percibida', b:'Quienes más escuchan creen que más les ayuda.', r:.66, p:'< 0,001', s:1, l:'Asociación positiva fuerte'},
+    {a:'Estrés por ruido ↔ "el sonido afecta mi estrés"', b:'La sensibilidad al ruido va ligada al estrés.', r:.52, p:'0,003', s:1, l:'Asociación positiva moderada'},
+    {a:'Concentración percibida ↔ productividad relativa', b:'Sentir foco no implica sentirse más productivo.', r:.29, p:'0,111', s:0, l:'No significativa'},
+    {a:'Frecuencia de escucha ↔ productividad relativa', b:'Escuchar más no garantiza sentirse más eficiente.', r:.26, p:'0,157', s:0, l:'No significativa'},
+    {a:'Estrés por ruido ↔ concentración con música', b:'El estrés por ruido actúa de forma independiente.', r:.03, p:'0,865', s:0, l:'Sin asociación'}
+  ];
+  var cb = $('#corr');
+  cs.forEach(function(x){
+    var d = document.createElement('div');
+    d.className = 'c-row rv'+(x.s?' sig':'');
+    d.style.setProperty('--r', (x.r*100)+'%');
+    d.innerHTML = '<div class="par">'+x.a+'<small>'+x.b+'</small></div><div class="rho"><i></i><b></b></div><div class="v">'+String(x.r).replace('.',',').replace(/^0$/,'0')+'</div><div><div class="p">p '+(x.p.charAt(0)==='<' ? '&lt; '+x.p.slice(2) : '= '+x.p)+'</div><div class="lec">'+x.l+'</div></div>';
+    cb.appendChild(d);
+  });
+
+  /* ondas cerebrales */
+  var ob = $('#ondas');
+  [['Theta','4–7 Hz',3,0,'creatividad'],['Alfa','8–12 Hz',5,1,'calma alerta'],['Beta','13–30 Hz',10,0,'atención'],['Gamma','~40 Hz',18,0,'insight']].forEach(function(o){
+    var amp = o[3] ? 11 : (o[2]>8 ? 7 : 11), pts = [], W = 300, H = 34, n = 120;
+    for (var i=0;i<=n;i++){ var x = i/n*W, y = H/2 + Math.sin(i/n*Math.PI*2*o[2])*amp; pts.push((i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)); }
+    var r = document.createElement('div');
+    r.className = 'onda-r'+(o[3]?' alfa':'');
+    r.innerHTML = '<div class="g">'+o[0]+'<span>'+o[1]+' · '+o[4]+'</span></div><svg viewBox="0 0 300 34" preserveAspectRatio="none"><path pathLength="1" d="'+pts.join('')+'"/></svg>';
+    ob.appendChild(r);
+  });
+
+  /* gráfico alfa (Paszkiel, tabla 3) */
+  (function(){
+    var svg = $('#alfa'), X = [70,310,550], Y0 = 290, K = 105, ymax = 2.2;
+    var series = [
+      {n:'Silencio',v:[1.83,.73,1.40],c:'#a89d8d'},
+      {n:'Rap',v:[2.12,.47,1.25],c:'#ff5b2e'},
+      {n:'Relajante',v:[1.48,.09,1.67],c:'#f1e9dc'},
+      {n:'ASMR',v:[1.46,.10,1.92],c:'#e8c872'}
+    ];
+    function y(v){ return Y0 - v*K; }
+    var h = '';
+    [0,.5,1,1.5,2].forEach(function(g){
+      h += '<line x1="30" x2="600" y1="'+y(g)+'" y2="'+y(g)+'" stroke="rgba(241,233,220,.1)"/><text x="0" y="'+(y(g)+4)+'">'+String(g).replace('.',',')+'</text>';
+    });
+    ['Antes del estrés','Tras el estrés','Tras el sonido'].forEach(function(l,i){
+      h += '<text x="'+X[i]+'" y="318" text-anchor="middle">'+l+'</text>';
+    });
+    series.forEach(function(s){
+      var d = s.v.map(function(v,i){return (i?'L':'M')+X[i]+' '+y(v)}).join('');
+      h += '<path class="ln" pathLength="1" stroke="'+s.c+'" d="'+d+'"/>';
+      s.v.forEach(function(v,i){ h += '<circle cx="'+X[i]+'" cy="'+y(v)+'" r="3.5" fill="'+s.c+'"/>'; });
+    });
+    /* etiquetas finales, separadas para que no se pisen */
+    var lab = series.map(function(s){return {n:s.n,c:s.c,y:y(s.v[2])}}).sort(function(a,b){return a.y-b.y});
+    for (var i=1;i<lab.length;i++){ if (lab[i].y-lab[i-1].y<15) lab[i].y = lab[i-1].y+15; }
+    lab.forEach(function(l){ h += '<text class="lb" x="566" y="'+(l.y+4)+'" style="fill:'+l.c+'">'+l.n+'</text>'; });
+    svg.innerHTML = h;
+  })();
+
+  /* sorteo de condiciones */
+  var conds = ['Silencio','Clásica','Rock','Mi música'];
+  function sortear(){
+    var out = '';
+    for (var p=1;p<=3;p++){
+      var a = conds.slice();
+      for (var i=a.length-1;i>0;i--){ var j = Math.floor(Math.random()*(i+1)); var t = a[i]; a[i]=a[j]; a[j]=t; }
+      out += '<div class="fila"><b>P'+p+'</b><div class="ord">'+a.map(function(c,k){return '<span class="s'+(k+1)+'" style="animation-delay:'+(k*70)+'ms">'+c+'</span>'}).join('')+'</div></div>';
+    }
+    $('#sorteo').innerHTML = out;
+  }
+  $('#sortear').addEventListener('click', sortear);
+  sortear();
+
+  /* ---------- aparición al hacer scroll ---------- */
+  var rvs = $$('.rv');
+  if ('IntersectionObserver' in window && !reduce){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, {threshold:.12, rootMargin:'0px 0px -6% 0px'});
+    rvs.forEach(function(el){ io.observe(el); });
+  } else { rvs.forEach(function(el){ el.classList.add('in'); }); }
+
+  /* ---------- menú activo + progreso ---------- */
+  var links = $$('#menu a'), secs = links.map(function(a){return $(a.getAttribute('href'))});
+  var prog = $('#progreso');
+  function onScroll(){
+    var sy = window.scrollY, hh = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.width = (hh>0 ? sy/hh*100 : 0)+'%';
+    var cur = -1;
+    secs.forEach(function(s,i){ if (s && s.getBoundingClientRect().top <= 120) cur = i; });
+    links.forEach(function(a,i){ a.classList.toggle('on', i===cur); });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+</script>
+</body>
+</html>
